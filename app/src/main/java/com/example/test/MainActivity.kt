@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
@@ -69,6 +70,7 @@ class VideoAdapter(val videoList: List<Video>) : RecyclerView.Adapter<VideoAdapt
         holder.videoView.start()
         holder.stopIcon.visibility = View.INVISIBLE
         this.holder = holder
+        holder.videoView.requestFocus()
     }
 
     fun getHolder(): ViewHolder?{
@@ -88,19 +90,20 @@ class FeedFragment() : Fragment(){
         val view = inflater.inflate(R.layout.home, container, false)
         videoList.add(Video(Uri.parse("android.resource://${activity?.packageName}/${R.raw.video1}"),10000, 2, 3, 4))
         videoList.add(Video(Uri.parse("android.resource://${activity?.packageName}/${R.raw.video2}"),3, 200, 3, 4))
-        view.findViewById<RecyclerView>(R.id.myre).apply{
+        val recyclerView = view.findViewById<RecyclerView>(R.id.myre)
+        recyclerView.apply{
             layoutManager = LinearLayoutManager(activity)
             adapter = VideoAdapter(videoList)
-            addOnScrollListener(object : RecyclerView.OnScrollListener() {
-
-            })
         }
+        PagerSnapHelper().attachToRecyclerView(recyclerView)
         return view
     }
 
     override fun onResume() {
         super.onResume()
-        (view?.findViewById<RecyclerView>(R.id.myre)?.adapter as VideoAdapter).getHolder()?.videoView?.start()
+        val videoView = (view?.findViewById<RecyclerView>(R.id.myre)?.adapter as VideoAdapter).getHolder()?.videoView
+        videoView?.start()
+        videoView?.requestFocus()
     }
 
     override fun onPause() {
